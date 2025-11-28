@@ -1,21 +1,25 @@
+
 import React, { useState, useEffect } from 'react';
 import { getProducts, getCategories, getBrands } from '../services/db';
 import { Product, Category, Brand } from '../types';
 import ProductCard from '../components/ProductCard';
 import { Filter, SlidersHorizontal, X } from 'lucide-react';
+import { CurrencyCode } from '../utils/currency';
 
 interface CatalogProps {
   initialSearch?: string;
   initialCategoryId?: number | null;
   initialBrandId?: number | null;
   onNavigate: (page: string, params?: any) => void;
+  currency: CurrencyCode;
 }
 
 const Catalog: React.FC<CatalogProps> = ({ 
   initialSearch = '', 
   initialCategoryId = null, 
   initialBrandId = null,
-  onNavigate 
+  onNavigate,
+  currency
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -197,6 +201,7 @@ const Catalog: React.FC<CatalogProps> = ({
                   brand={brands.find(b => b.id === product.brand_id)}
                   onView={(id) => onNavigate('product', { id })}
                   onAddToCart={() => alert(`Added ${product.name} to cart`)}
+                  currency={currency}
                 />
               ))}
             </div>

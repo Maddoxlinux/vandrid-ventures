@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Product, Category, Brand } from '../types';
 import { ShoppingCart, Eye } from 'lucide-react';
+import { CurrencyCode, formatPrice } from '../utils/currency';
 
 interface ProductCardProps {
   product: Product;
@@ -8,9 +10,10 @@ interface ProductCardProps {
   brand?: Brand;
   onView: (id: number) => void;
   onAddToCart?: (id: number) => void;
+  currency: CurrencyCode;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, category, brand, onView, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, category, brand, onView, onAddToCart, currency }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition border border-gray-100 flex flex-col h-full group">
       <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100 cursor-pointer" onClick={() => onView(product.id)}>
@@ -42,7 +45,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, category, brand, onV
         <p className="text-sm text-gray-500 mb-4 line-clamp-2">{product.description}</p>
         
         <div className="mt-auto flex items-center justify-between">
-          <span className="text-xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
+          <span className="text-xl font-bold text-gray-900">
+            {formatPrice(product.price, currency)}
+          </span>
           <div className="flex gap-2">
             <button 
               onClick={() => onView(product.id)}

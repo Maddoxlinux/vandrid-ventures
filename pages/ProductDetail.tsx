@@ -1,15 +1,18 @@
+
 import React, { useState, useEffect } from 'react';
 import { getProductById, getCategories, getBrands } from '../services/db';
 import { Product, Category, Brand } from '../types';
 import { ArrowLeft, Check, ShoppingCart, Truck, Shield } from 'lucide-react';
+import { CurrencyCode, formatPrice } from '../utils/currency';
 
 interface ProductDetailProps {
   productId: number;
   onNavigate: (page: string, params?: any) => void;
   onAddToCart: (id: number) => void;
+  currency: CurrencyCode;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate, onAddToCart }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate, onAddToCart, currency }) => {
   const [product, setProduct] = useState<Product | undefined>();
   const [category, setCategory] = useState<Category | undefined>();
   const [brand, setBrand] = useState<Brand | undefined>();
@@ -64,7 +67,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate, on
             </div>
 
             <div className="text-3xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-6">
-              ${product.price.toFixed(2)}
+              {formatPrice(product.price, currency)}
             </div>
 
             <div className="prose prose-sm text-gray-600 mb-8">

@@ -1,13 +1,17 @@
+
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Menu, Car, X } from 'lucide-react';
+import { Search, ShoppingCart, Menu, Car, X, Globe } from 'lucide-react';
+import { CurrencyCode, CURRENCIES } from '../utils/currency';
 
 interface NavbarProps {
   onNavigate: (page: string) => void;
   onSearch: (query: string) => void;
   cartCount: number;
+  currency: CurrencyCode;
+  onCurrencyChange: (currency: CurrencyCode) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, currency, onCurrencyChange }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -54,6 +58,23 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount }) => {
             <button onClick={() => onNavigate('catalog')} className="hover:text-brand-300 font-medium">Catalog</button>
             <button onClick={() => onNavigate('about')} className="hover:text-brand-300 font-medium">About</button>
             <button onClick={() => onNavigate('contact')} className="hover:text-brand-300 font-medium">Contact</button>
+            
+            {/* Currency Selector */}
+            <div className="flex items-center gap-1 bg-brand-800 rounded px-2 py-1">
+              <span className="text-xs text-brand-300">Currency:</span>
+              <select 
+                value={currency}
+                onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
+                className="bg-transparent text-sm font-bold focus:outline-none cursor-pointer"
+              >
+                {Object.keys(CURRENCIES).map((code) => (
+                  <option key={code} value={code} className="text-gray-900">
+                    {code}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div 
               className="relative cursor-pointer hover:text-brand-300 transition"
               onClick={() => onNavigate('cart')}
@@ -96,6 +117,23 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount }) => {
             <button onClick={() => { onNavigate('catalog'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">Catalog</button>
              <button onClick={() => { onNavigate('about'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">About</button>
              <button onClick={() => { onNavigate('contact'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">Contact</button>
+            
+            {/* Mobile Currency Selector */}
+            <div className="flex items-center justify-between py-2 border-b border-brand-700">
+              <span className="flex items-center gap-2"><Globe className="h-4 w-4" /> Currency</span>
+              <select 
+                value={currency}
+                onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
+                className="bg-brand-700 border border-brand-600 rounded px-2 py-1 text-sm text-white"
+              >
+                {Object.keys(CURRENCIES).map((code) => (
+                  <option key={code} value={code}>
+                    {CURRENCIES[code as CurrencyCode].label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button onClick={() => { onNavigate('cart'); setIsMobileMenuOpen(false); }} className="text-left py-2 flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" /> Cart ({cartCount})
             </button>

@@ -1,13 +1,16 @@
+
 import React from 'react';
 import { ArrowRight, ShieldCheck, Truck, Wrench } from 'lucide-react';
 import { getFeaturedProducts, getCategories, getBrands } from '../services/db';
 import ProductCard from '../components/ProductCard';
+import { CurrencyCode } from '../utils/currency';
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
+  currency: CurrencyCode;
 }
 
-const Home: React.FC<HomeProps> = ({ onNavigate }) => {
+const Home: React.FC<HomeProps> = ({ onNavigate, currency }) => {
   const featuredProducts = getFeaturedProducts();
   const categories = getCategories();
   const brands = getBrands();
@@ -122,6 +125,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
               brand={brands.find(b => b.id === product.brand_id)}
               onView={(id) => onNavigate('product', { id })}
               onAddToCart={() => alert('Item added to cart!')}
+              currency={currency}
             />
           ))}
         </div>

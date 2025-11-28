@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -9,6 +10,7 @@ import Cart from './pages/Cart';
 import Contact from './pages/Contact';
 import { getProductById } from './services/db';
 import { Product } from './types';
+import { CurrencyCode } from './utils/currency';
 
 // Types for navigation state
 type Page = 'home' | 'catalog' | 'product' | 'about' | 'cart' | 'contact';
@@ -24,6 +26,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [navParams, setNavParams] = useState<NavParams>({});
   const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [currency, setCurrency] = useState<CurrencyCode>('GHS'); // Default to GHS as requested
 
   // Simple router function
   const handleNavigate = (page: string, params: NavParams = {}) => {
@@ -55,11 +58,13 @@ const App: React.FC = () => {
         onNavigate={(page) => handleNavigate(page)} 
         onSearch={handleSearch}
         cartCount={cartItems.length}
+        currency={currency}
+        onCurrencyChange={setCurrency}
       />
       
       <main className="flex-grow bg-gray-50">
         {currentPage === 'home' && (
-          <Home onNavigate={handleNavigate} />
+          <Home onNavigate={handleNavigate} currency={currency} />
         )}
 
         {currentPage === 'about' && (
@@ -75,6 +80,7 @@ const App: React.FC = () => {
             items={cartItems} 
             onRemove={handleRemoveFromCart} 
             onNavigate={handleNavigate}
+            currency={currency}
           />
         )}
         
@@ -86,6 +92,7 @@ const App: React.FC = () => {
             initialSearch={navParams.search}
             initialCategoryId={navParams.category_id}
             initialBrandId={navParams.brand_id}
+            currency={currency}
           />
         )}
         
@@ -94,6 +101,7 @@ const App: React.FC = () => {
             productId={navParams.id} 
             onNavigate={handleNavigate}
             onAddToCart={handleAddToCart}
+            currency={currency}
           />
         )}
       </main>
