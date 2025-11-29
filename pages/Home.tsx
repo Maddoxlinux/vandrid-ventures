@@ -1,19 +1,33 @@
 
 import React from 'react';
-import { ArrowRight, ShieldCheck, Truck, Wrench } from 'lucide-react';
-import { getFeaturedProducts, getCategories, getBrands } from '../services/db';
+import { ArrowRight, ShieldCheck, Truck, Wrench, Settings, Disc, Zap, Box, Droplet } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { CurrencyCode } from '../utils/currency';
+import { Product, Brand, Category } from '../types';
 
 interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
+  onAddToCart: (id: number) => void;
   currency: CurrencyCode;
+  products: Product[];
+  brands: Brand[];
+  categories: Category[];
 }
 
-const Home: React.FC<HomeProps> = ({ onNavigate, currency }) => {
-  const featuredProducts = getFeaturedProducts();
-  const categories = getCategories();
-  const brands = getBrands();
+const Home: React.FC<HomeProps> = ({ onNavigate, onAddToCart, currency, products, brands, categories }) => {
+  const featuredProducts = products.filter(p => p.is_featured).slice(0, 4);
+
+  // Map string icon names from DB to Lucide components
+  const getCategoryIcon = (iconName: string | undefined) => {
+    switch (iconName) {
+      case 'Settings': return <Settings className="h-8 w-8" />;
+      case 'Disc': return <Disc className="h-8 w-8" />;
+      case 'Zap': return <Zap className="h-8 w-8" />;
+      case 'Box': return <Box className="h-8 w-8" />;
+      case 'Droplet': return <Droplet className="h-8 w-8" />;
+      default: return <Settings className="h-8 w-8" />;
+    }
+  };
 
   return (
     <div className="flex flex-col gap-12 pb-12">
@@ -96,9 +110,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, currency }) => {
               onClick={() => onNavigate('catalog', { category_id: cat.id })}
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer text-center border border-gray-100 hover:border-brand-200 group"
             >
-              <div className="w-16 h-16 bg-gray-50 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:bg-brand-50 transition">
-                {/* Placeholder icons based on slug/name logic or simple text */}
-                <span className="text-2xl text-gray-400 group-hover:text-brand-600">⚙️</span>
+              <div className="w-16 h-16 bg-gray-50 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:bg-brand-50 transition text-gray-400 group-hover:text-brand-600">
+                {getCategoryIcon(cat.icon)}
               </div>
               <h3 className="font-semibold text-gray-800 group-hover:text-brand-600">{cat.name}</h3>
             </div>
@@ -124,7 +137,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, currency }) => {
               category={categories.find(c => c.id === product.category_id)}
               brand={brands.find(b => b.id === product.brand_id)}
               onView={(id) => onNavigate('product', { id })}
-              onAddToCart={() => alert('Item added to cart!')}
+              onAddToCart={onAddToCart}
               currency={currency}
             />
           ))}

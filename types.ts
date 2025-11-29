@@ -1,3 +1,4 @@
+
 // Equivalent to Laravel Models and Migration Schemas
 
 export interface Category {
@@ -29,6 +30,40 @@ export interface Product {
   compatible_models: string[]; // JSON column in DB
   is_featured: boolean;
   created_at: string;
+}
+
+// User model equivalent (added phone_number as requested)
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone_number: string;
+  role: 'customer' | 'admin'; // Added role field
+  created_at: string;
+}
+
+// Cart Item for Session Storage
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
+// Order Interfaces for Phase 3
+export interface Order {
+  id: number;
+  user_id: number;
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  shipping_address: string;
+  created_at: string;
+  items: OrderItem[];
+}
+
+export interface OrderItem {
+  product_id: number;
+  product_name: string;
+  quantity: number;
+  price: number;
 }
 
 // Helper type for filtering

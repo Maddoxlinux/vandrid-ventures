@@ -32,7 +32,7 @@ export const PRODUCTS: Product[] = [
     stock: 100,
     category_id: 2,
     brand_id: 1, // Toyota
-    image_url: 'https://picsum.photos/id/1/400/400',
+    image_url: 'https://images.unsplash.com/photo-1600706432502-77b0df82eb1e?auto=format&fit=crop&w=600&q=80', // Brake caliper/wheel
     compatible_models: ['Camry', 'Corolla', 'RAV4'],
     is_featured: true,
     created_at: new Date().toISOString(),
@@ -47,7 +47,8 @@ export const PRODUCTS: Product[] = [
     stock: 500,
     category_id: 5,
     brand_id: 1, // Toyota
-    image_url: 'https://picsum.photos/id/2/400/400',
+    // Updated image: Mechanic pouring oil / car engine
+    image_url: 'https://images.unsplash.com/photo-1627483297886-49710ae1fc28?auto=format&fit=crop&w=600&q=80', 
     compatible_models: ['Universal'],
     is_featured: true,
     created_at: new Date().toISOString(),
@@ -62,7 +63,7 @@ export const PRODUCTS: Product[] = [
     stock: 50,
     category_id: 3,
     brand_id: 3, // BMW
-    image_url: 'https://picsum.photos/id/3/400/400',
+    image_url: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=600&q=80', // Car headlight
     compatible_models: ['3 Series', '5 Series', 'X5'],
     is_featured: true,
     created_at: new Date().toISOString(),
@@ -77,7 +78,7 @@ export const PRODUCTS: Product[] = [
     stock: 30,
     category_id: 1,
     brand_id: 2, // Honda
-    image_url: 'https://picsum.photos/id/4/400/400',
+    image_url: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=600&q=80', // Engine parts
     compatible_models: ['Civic', 'Accord', 'CR-V'],
     is_featured: false,
     created_at: new Date().toISOString(),
@@ -92,7 +93,7 @@ export const PRODUCTS: Product[] = [
     stock: 20,
     category_id: 2,
     brand_id: 4, // Ford
-    image_url: 'https://picsum.photos/id/5/400/400',
+    image_url: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80', // Mechanic/Under car
     compatible_models: ['F-150', 'Explorer'],
     is_featured: false,
     created_at: new Date().toISOString(),
@@ -107,7 +108,7 @@ export const PRODUCTS: Product[] = [
     stock: 200,
     category_id: 1,
     brand_id: 5, // Nissan
-    image_url: 'https://picsum.photos/id/6/400/400',
+    image_url: 'https://images.unsplash.com/photo-1619888949586-b4d6d6b63c9b?auto=format&fit=crop&w=600&q=80', // Spark plug
     compatible_models: ['Altima', 'Sentra', 'Rogue'],
     is_featured: false,
     created_at: new Date().toISOString(),
@@ -122,7 +123,7 @@ export const PRODUCTS: Product[] = [
     stock: 10,
     category_id: 3,
     brand_id: 1, // Toyota
-    image_url: 'https://picsum.photos/id/7/400/400',
+    image_url: 'https://images.unsplash.com/photo-1626447852990-54a2a19da37c?auto=format&fit=crop&w=600&q=80', // Engine
     compatible_models: ['Camry', 'Highlander'],
     is_featured: false,
     created_at: new Date().toISOString(),
@@ -137,7 +138,7 @@ export const PRODUCTS: Product[] = [
     stock: 60,
     category_id: 4,
     brand_id: 3, // BMW
-    image_url: 'https://picsum.photos/id/8/400/400',
+    image_url: 'https://images.unsplash.com/photo-1597687210367-a490c4818169?auto=format&fit=crop&w=600&q=80', // Exhaust
     compatible_models: ['Universal'],
     is_featured: false,
     created_at: new Date().toISOString(),
@@ -152,7 +153,7 @@ export const PRODUCTS: Product[] = [
     stock: 15,
     category_id: 1,
     brand_id: 2, // Honda
-    image_url: 'https://picsum.photos/id/9/400/400',
+    image_url: 'https://images.unsplash.com/photo-1580274455191-1c62238fa333?auto=format&fit=crop&w=600&q=80', // Engine parts
     compatible_models: ['Civic', 'Pilot'],
     is_featured: true,
     created_at: new Date().toISOString(),
@@ -167,7 +168,7 @@ export const PRODUCTS: Product[] = [
     stock: 25,
     category_id: 3,
     brand_id: 4, // Ford
-    image_url: 'https://picsum.photos/id/10/400/400',
+    image_url: 'https://images.unsplash.com/photo-1626839358943-4a6914611488?auto=format&fit=crop&w=600&q=80', // Battery
     compatible_models: ['Focus', 'Fiesta'],
     is_featured: false,
     created_at: new Date().toISOString(),

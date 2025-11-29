@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { getProductById, getCategories, getBrands } from '../services/db';
 import { Product, Category, Brand } from '../types';
 import { ArrowLeft, Check, ShoppingCart, Truck, Shield } from 'lucide-react';
 import { CurrencyCode, formatPrice } from '../utils/currency';
@@ -10,23 +9,26 @@ interface ProductDetailProps {
   onNavigate: (page: string, params?: any) => void;
   onAddToCart: (id: number) => void;
   currency: CurrencyCode;
+  products: Product[];
+  brands: Brand[];
+  categories: Category[];
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate, onAddToCart, currency }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate, onAddToCart, currency, products, brands, categories }) => {
   const [product, setProduct] = useState<Product | undefined>();
   const [category, setCategory] = useState<Category | undefined>();
   const [brand, setBrand] = useState<Brand | undefined>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const foundProduct = getProductById(productId);
+    const foundProduct = products.find(p => p.id === productId);
     if (foundProduct) {
       setProduct(foundProduct);
-      setCategory(getCategories().find(c => c.id === foundProduct.category_id));
-      setBrand(getBrands().find(b => b.id === foundProduct.brand_id));
+      setCategory(categories.find(c => c.id === foundProduct.category_id));
+      setBrand(brands.find(b => b.id === foundProduct.brand_id));
     }
     setLoading(false);
-  }, [productId]);
+  }, [productId, products, brands, categories]);
 
   if (loading) return <div className="p-12 text-center">Loading...</div>;
   if (!product) return <div className="p-12 text-center">Product not found. <button onClick={() => onNavigate('catalog')} className="text-brand-600">Go Back</button></div>;
@@ -102,9 +104,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate, on
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={() => onAddToCart(product.id)}
-                  className="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
+                  disabled={product.stock <= 0}
+                  className={`flex-1 font-bold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2 ${product.stock > 0 ? 'bg-brand-600 hover:bg-brand-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
                 >
-                  <ShoppingCart className="h-5 w-5" /> Add to Cart
+                  <ShoppingCart className="h-5 w-5" /> {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                 </button>
                 <button className="flex-1 border border-gray-300 hover:border-brand-400 hover:text-brand-600 text-gray-700 font-semibold py-3 px-6 rounded-lg transition">
                   Save for Later

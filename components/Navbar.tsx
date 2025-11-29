@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Menu, Car, X, Globe } from 'lucide-react';
+import { Search, ShoppingCart, Menu, Car, X, Globe, User as UserIcon, LogOut, LayoutDashboard } from 'lucide-react';
 import { CurrencyCode, CURRENCIES } from '../utils/currency';
+import { User } from '../types';
 
 interface NavbarProps {
   onNavigate: (page: string) => void;
@@ -9,9 +10,19 @@ interface NavbarProps {
   cartCount: number;
   currency: CurrencyCode;
   onCurrencyChange: (currency: CurrencyCode) => void;
+  user: User | null;
+  onLogout: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, currency, onCurrencyChange }) => {
+const Navbar: React.FC<NavbarProps> = ({ 
+  onNavigate, 
+  onSearch, 
+  cartCount, 
+  currency, 
+  onCurrencyChange,
+  user,
+  onLogout 
+}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -39,7 +50,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, curren
               <input
                 type="text"
                 placeholder="Search by part name, SKU, or car model..."
-                className="w-full pl-4 pr-10 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                className="w-full pl-4 pr-10 py-2 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -56,7 +67,17 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, curren
           <div className="hidden md:flex items-center gap-6">
             <button onClick={() => onNavigate('home')} className="hover:text-brand-300 font-medium">Home</button>
             <button onClick={() => onNavigate('catalog')} className="hover:text-brand-300 font-medium">Catalog</button>
-            <button onClick={() => onNavigate('about')} className="hover:text-brand-300 font-medium">About</button>
+            
+            {/* Admin Dashboard Link */}
+            {user?.role === 'admin' && (
+              <button 
+                onClick={() => onNavigate('dashboard')} 
+                className="hover:text-brand-300 font-medium flex items-center gap-1 text-brand-400"
+              >
+                <LayoutDashboard className="h-4 w-4" /> Dashboard
+              </button>
+            )}
+
             <button onClick={() => onNavigate('contact')} className="hover:text-brand-300 font-medium">Contact</button>
             
             {/* Currency Selector */}
@@ -75,6 +96,28 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, curren
               </select>
             </div>
 
+            {/* User Auth */}
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm hidden lg:inline">Hi, {user.name}</span>
+                <button 
+                  onClick={onLogout}
+                  className="hover:text-brand-300" 
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => onNavigate('login')}
+                className="flex items-center gap-1 hover:text-brand-300"
+              >
+                <UserIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Login</span>
+              </button>
+            )}
+
             <div 
               className="relative cursor-pointer hover:text-brand-300 transition"
               onClick={() => onNavigate('cart')}
@@ -89,7 +132,18 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, curren
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center gap-4">
+             <div 
+              className="relative cursor-pointer hover:text-brand-300 transition"
+              onClick={() => onNavigate('cart')}
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </div>
             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -104,7 +158,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, curren
              <input
                 type="text"
                 placeholder="Search parts..."
-                className="w-full pl-4 pr-10 py-2 rounded-lg text-gray-900"
+                className="w-full pl-4 pr-10 py-2 rounded-lg text-gray-900 bg-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -113,8 +167,16 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, curren
               </button>
           </form>
           <div className="flex flex-col gap-3">
+            {user && (
+               <div className="text-brand-300 text-sm pb-2 border-b border-brand-700">
+                 Signed in as <span className="font-bold text-white">{user.name}</span>
+               </div>
+            )}
             <button onClick={() => { onNavigate('home'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">Home</button>
             <button onClick={() => { onNavigate('catalog'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">Catalog</button>
+             {user?.role === 'admin' && (
+               <button onClick={() => { onNavigate('dashboard'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700 text-brand-400">Dashboard</button>
+             )}
              <button onClick={() => { onNavigate('about'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">About</button>
              <button onClick={() => { onNavigate('contact'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">Contact</button>
             
@@ -133,6 +195,12 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onSearch, cartCount, curren
                 ))}
               </select>
             </div>
+
+            {!user ? (
+               <button onClick={() => { onNavigate('login'); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700">Login / Register</button>
+            ) : (
+               <button onClick={() => { onLogout(); setIsMobileMenuOpen(false); }} className="text-left py-2 border-b border-brand-700 text-red-300">Logout</button>
+            )}
 
             <button onClick={() => { onNavigate('cart'); setIsMobileMenuOpen(false); }} className="text-left py-2 flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" /> Cart ({cartCount})

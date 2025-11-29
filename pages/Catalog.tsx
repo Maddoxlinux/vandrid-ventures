@@ -1,9 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { getProducts, getCategories, getBrands } from '../services/db';
 import { Product, Category, Brand } from '../types';
 import ProductCard from '../components/ProductCard';
-import { Filter, SlidersHorizontal, X } from 'lucide-react';
+import { Filter, SlidersHorizontal, X, Settings, Disc, Zap, Box, Droplet } from 'lucide-react';
 import { CurrencyCode } from '../utils/currency';
 
 interface CatalogProps {
@@ -11,7 +10,11 @@ interface CatalogProps {
   initialCategoryId?: number | null;
   initialBrandId?: number | null;
   onNavigate: (page: string, params?: any) => void;
+  onAddToCart: (id: number) => void;
   currency: CurrencyCode;
+  products: Product[];
+  brands: Brand[];
+  categories: Category[];
 }
 
 const Catalog: React.FC<CatalogProps> = ({ 
@@ -19,11 +22,13 @@ const Catalog: React.FC<CatalogProps> = ({
   initialCategoryId = null, 
   initialBrandId = null,
   onNavigate,
-  currency
+  onAddToCart,
+  currency,
+  products,
+  brands,
+  categories
 }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   
   // Filter States
   const [search, setSearch] = useState(initialSearch);
@@ -32,25 +37,47 @@ const Catalog: React.FC<CatalogProps> = ({
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
-    // Load initial data
-    setCategories(getCategories());
-    setBrands(getBrands());
-  }, []);
+    // Filter products whenever state or products prop changes
+    const filtered = products.filter(product => {
+      let matches = true;
 
-  useEffect(() => {
-    // Filter products whenever state changes
-    const filtered = getProducts({
-      search,
-      category_id: selectedCategory,
-      brand_id: selectedBrand
+      if (search) {
+        const searchLower = search.toLowerCase();
+        matches = matches && (
+          product.name.toLowerCase().includes(searchLower) ||
+          product.sku.toLowerCase().includes(searchLower) ||
+          product.compatible_models.some(m => m.toLowerCase().includes(searchLower))
+        );
+      }
+
+      if (selectedCategory) {
+        matches = matches && product.category_id === selectedCategory;
+      }
+
+      if (selectedBrand) {
+        matches = matches && product.brand_id === selectedBrand;
+      }
+
+      return matches;
     });
-    setProducts(filtered);
-  }, [search, selectedCategory, selectedBrand]);
+    setFilteredProducts(filtered);
+  }, [search, selectedCategory, selectedBrand, products]);
 
   const clearFilters = () => {
     setSearch('');
     setSelectedCategory(null);
     setSelectedBrand(null);
+  };
+
+  const getCategoryIcon = (iconName: string | undefined) => {
+    switch (iconName) {
+      case 'Settings': return <Settings className="h-4 w-4" />;
+      case 'Disc': return <Disc className="h-4 w-4" />;
+      case 'Zap': return <Zap className="h-4 w-4" />;
+      case 'Box': return <Box className="h-4 w-4" />;
+      case 'Droplet': return <Droplet className="h-4 w-4" />;
+      default: return <Settings className="h-4 w-4" />;
+    }
   };
 
   return (
@@ -117,9 +144,9 @@ const Catalog: React.FC<CatalogProps> = ({
                 </h3>
                 <div className="space-y-2">
                   {categories.map(cat => (
-                    <label key={cat.id} className="flex items-center gap-3 cursor-pointer group">
+                    <label key={cat.id} className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-gray-50 rounded transition">
                       <div className={`
-                        w-5 h-5 rounded border flex items-center justify-center transition
+                        w-5 h-5 rounded border flex items-center justify-center transition flex-shrink-0
                         ${selectedCategory === cat.id ? 'bg-brand-600 border-brand-600' : 'border-gray-300 bg-white group-hover:border-brand-400'}
                       `}>
                         {selectedCategory === cat.id && <span className="text-white text-xs">✓</span>}
@@ -132,9 +159,12 @@ const Catalog: React.FC<CatalogProps> = ({
                           setSelectedCategory(selectedCategory === cat.id ? null : cat.id);
                         }}
                       />
-                      <span className={`text-sm ${selectedCategory === cat.id ? 'text-brand-700 font-medium' : 'text-gray-600'}`}>
-                        {cat.name}
-                      </span>
+                      <div className={`flex items-center gap-2 text-sm ${selectedCategory === cat.id ? 'text-brand-700 font-medium' : 'text-gray-600'}`}>
+                        <span className="text-gray-400 group-hover:text-brand-500">
+                          {getCategoryIcon(cat.icon)}
+                        </span>
+                        <span>{cat.name}</span>
+                      </div>
                     </label>
                   ))}
                 </div>
@@ -145,9 +175,9 @@ const Catalog: React.FC<CatalogProps> = ({
                 <h3 className="font-bold text-gray-900 mb-4">Brands</h3>
                 <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                   {brands.map(brand => (
-                    <label key={brand.id} className="flex items-center gap-3 cursor-pointer group">
+                    <label key={brand.id} className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-gray-50 rounded transition">
                        <div className={`
-                        w-5 h-5 rounded border flex items-center justify-center transition
+                        w-5 h-5 rounded border flex items-center justify-center transition flex-shrink-0
                         ${selectedBrand === brand.id ? 'bg-brand-600 border-brand-600' : 'border-gray-300 bg-white group-hover:border-brand-400'}
                       `}>
                         {selectedBrand === brand.id && <span className="text-white text-xs">✓</span>}
@@ -173,12 +203,12 @@ const Catalog: React.FC<CatalogProps> = ({
 
         {/* Main Content */}
         <div className="flex-1">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h1 className="text-2xl font-bold text-gray-900">
               {search ? `Results for "${search}"` : selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : 'All Products'}
-              <span className="text-gray-500 text-lg font-normal ml-2">({products.length})</span>
+              <span className="text-gray-500 text-lg font-normal ml-2">({filteredProducts.length})</span>
             </h1>
-            <select className="border-gray-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 border px-3 py-2 bg-white">
+            <select className="border-gray-300 rounded-md text-sm focus:ring-brand-500 focus:border-brand-500 border px-3 py-2 bg-white w-full sm:w-auto">
               <option>Sort by: Featured</option>
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>
@@ -186,21 +216,21 @@ const Catalog: React.FC<CatalogProps> = ({
             </select>
           </div>
 
-          {products.length === 0 ? (
+          {filteredProducts.length === 0 ? (
             <div className="text-center py-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
               <p className="text-gray-500 text-lg mb-2">No products found matching your criteria.</p>
               <button onClick={clearFilters} className="text-brand-600 font-medium hover:underline">Clear Filters</button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map(product => (
+              {filteredProducts.map(product => (
                 <ProductCard 
                   key={product.id}
                   product={product}
                   category={categories.find(c => c.id === product.category_id)}
                   brand={brands.find(b => b.id === product.brand_id)}
                   onView={(id) => onNavigate('product', { id })}
-                  onAddToCart={() => alert(`Added ${product.name} to cart`)}
+                  onAddToCart={onAddToCart}
                   currency={currency}
                 />
               ))}
